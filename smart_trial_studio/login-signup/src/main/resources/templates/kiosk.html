@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Clothing Store Kiosk</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background: url('kiosk1.jpg') no-repeat center fixed;
+            background-size: cover;
+            height: 100vh;
+        }
+
+        .navbar {
+            color: #000000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 10px;
+            left: 0;
+            background-color: transparent; /* Remove background color */
+            z-index: 1000; /* Ensure the navbar is on top of other content */
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 50px; /* Increase font size for the navbar title */
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            max-width: 250px; /* Adjust as needed */
+            padding-right: 200px; /* Ensures space on the right */
+        }
+
+        .navbar .user-info i {
+            margin-right: 8px;
+        }
+
+        .navbar .user-info p {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1; /* Allows p to take up available space */
+            font-size: 25px; /* Increase font size for the username display */
+        }
+
+        .container {
+            width: 80%;
+            margin: 80px auto 0; /* Adjust margin-top to avoid overlapping with the fixed navbar */
+            overflow: hidden;
+            padding: 20px 0;
+        }
+
+        .products {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .product {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            width: 30%;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #555;
+        }
+
+        .nav-container {
+            position: fixed; /* Fixes the position of the nav-container */
+            top: 150px; /* Adjusted to be just below the navbar */
+            right: 200px; /* Increase margin-right */
+            width: calc(100% - 20px); /* Adjust width to account for margin-right */
+            background-color: transparent; /* Remove background color */
+            z-index: 999; /* Ensure it's below the main navbar */
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 20px; /* Adds padding to the sides */
+        }
+
+        .nav {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-left: 40px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #000;
+            font-size: 30px; /* Increase font size for nav links */
+            transition: color 0.3s ease; /* Smooth color transition */
+        }
+
+        .nav-link:hover {
+            color: #800080; /* Purple color on hover */
+        }
+
+        .nav-link.active {
+            color: #800080; /* Purple color for the active state */
+        }
+
+        .card-grid {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 250px;
+            right: 20px;
+            width: 60%; /* Adjust width */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 40px; /* Increase grid gap */
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            padding: 40px; /* Double the padding */
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 36px; /* Double the font size */
+            margin-bottom: 20px;
+        }
+
+       .new-order-btn {
+            background: #800080; /* Purple color */
+            color: #fff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            display: block;
+            width: 200px; /* Adjust width as needed */
+            margin: 40px 20px; /* Adjust margin to position at the end and right */
+            text-align: center;
+            border-radius: 5px; /* Add border-radius for rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow */
+            transition: background 0.3s ease; /* Smooth background transition */
+            position: fixed;
+            right: 1380px;
+            bottom: 20px;
+        }
+
+        .new-order-btn:hover {
+            background: #333; /* Darker background on hover */
+        }
+        .cart-button {
+    position: fixed; /* Keeps the button fixed in the top-right corner */
+    top: 10px; /* Positions the button 10px from the top */
+    right: 10px; /* Positions the button 10px from the right */
+    padding: 20px 30px; /* Adds padding to the button */
+    background-color: #800080;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block; /* Ensures the button takes up only as much width as it needs */
+    z-index: 1000; /* Ensures the button stays on top of other content */
+    box-sizing: border-box; /* Ensures padding and border are included in the button's width */
+    width: auto; /* Makes sure the width is set to auto */
+}
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <h1>Welcome to Smart Trial Studio Kiosk</h1>
+    <button id="cartButton" class="cart-button" onclick="navigateToKioskCart()">Cart<!--<span id="cart-count">0</span>--></button>
+</nav>
+<div class="nav-container">
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="#" onclick="showFemaleCards()">Female</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showMaleCards()">Male</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showKidsCards()">Kids</a>
+        </li>
+    </ul>
+</div>
+<div class="card-grid" id="femaleCardGrid">
+    <div class="card" onclick="searchProducts('dress')">
+        <h2>Dresses</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('top')">
+        <h2>Tops</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('women shirt')">
+        <h2>Shirts</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card"onclick="searchProducts('women jeans')">
+        <h2>Jeans</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('women accessories')">
+        <h2>Accessories</h2>
+        <p>Footwear and Jewelry</p>
+    </div>
+    <div class="card" onclick="searchProducts('beauty')">
+        <h2>Beauty</h2>
+        <p>Cosmetics</p>
+    </div>
+</div>
+<div class="card-grid" id="maleCardGrid">
+    <div class="card" onclick="searchProducts('suits')">
+        <h2>Suits</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('male t-shirt')">
+        <h2>T-Shirts</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('male shirt')">
+        <h2>Shirts</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('male jeans')">
+        <h2>Jeans</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('male accessories')">
+        <h2>Accessories</h2>
+        <p>Footwear and Watches</p>
+    </div>
+    <div class="card" onclick="searchProducts('grooming')">
+        <h2>Grooming</h2>
+        <p>Cosmetics</p>
+    </div>
+</div>
+<div class="card-grid" id="kidsCardGrid">
+    <div class="card" onclick="searchProducts('baby clothing')">
+        <h2>Baby Clothing</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('kids t-shirt')">
+        <h2>T-Shirts</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('kids jeans')">
+        <h2>Jeans</h2>
+        <p>Clothing</p>
+    </div>
+    <div class="card" onclick="searchProducts('toys')">
+        <h2>Toys</h2>
+        <p>Games</p>
+    </div>
+    <div class="card" onclick="searchProducts('kids footware')">
+        <h2>Footwear</h2>
+        <p>Accessories</p>
+    </div>
+    <div class="card" onclick="searchProducts('kids activeware')">
+        <h2>Activewear</h2>
+        <p>Clothing</p>
+    </div>
+</div>
+<!-- Checkout Button -->
+<button class="new-order-btn" onclick="clearKioskCart()">New Order</button>
+
+
+<!--<div class="cart" onclick="viewCart()">Kiosk: <span id="kiosk-count">0</span> items</div>-->
+<!-- Cart Button -->
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+     let cartCounter = 0;
+            updateCartCount();
+
+
+
+        async function updateCartCount() {
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/kioskcart/count');
+            if (response.ok) {
+                const count = await response.json();
+                document.getElementById('cart-count').textContent = count;
+            } else {
+                console.error('Failed to fetch cart count:', response.status, response.statusText);
+                document.getElementById('cart-count').textContent = 'Error';
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+            document.getElementById('cart-count').textContent = 'Error';
+        }
+    }
+
+
+        document.querySelectorAll(".add-to-cart").forEach(button => {
+            button.addEventListener("click", function() {
+                cartCounter++;
+                updateCartCounter();
+            });
+        });
+
+        function renderProducts(products) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+
+                productCard.innerHTML = `
+                    <div class="product-info">
+                        <div class="details">
+                            <h2>${product.name}</h2>
+                            <p>${product.description}</p>
+                            <p><strong>Brand:</strong> ${product.brand}</p>
+                            <p><strong>Category:</strong> ${product.category}</p>
+                            <p><strong>Color:</strong> ${product.color}</p>
+                            <p><strong>Size:</strong> ${product.size}</p>
+                            <p><strong>Price:</strong> ${product.price}</p>
+                        </div>
+                        <div class="product-image-and-button">
+                            <img src="${product.imgUrl}" alt="${product.name}">
+                            <button class="add-to-cart" onclick="addToCart('${product.id}')">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+
+                productList.appendChild(productCard);
+            });
+        }
+    });
+
+    async function clearKioskCart() {
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/resetkioskcart');
+                if (response.ok) {
+                    alert('Cart has been reset for new order!');
+                    location.reload();
+                    updateCartCount();
+                } else {
+                    console.error('Failed to reset cart');
+                    document.getElementById('cart-count').textContent = 'Error';
+                }
+            } catch (error) {
+            console.error('Error resetting cart:', error);
+            document.getElementById('cart-count').textContent = 'Error';
+            }
+           }
+
+    function showFemaleCards() {
+        document.getElementById('femaleCardGrid').style.display = 'grid';
+        document.getElementById('maleCardGrid').style.display = 'none';
+        document.getElementById('kidsCardGrid').style.display = 'none';
+    }
+
+    function showMaleCards() {
+        document.getElementById('maleCardGrid').style.display = 'grid';
+        document.getElementById('femaleCardGrid').style.display = 'none';
+        document.getElementById('kidsCardGrid').style.display = 'none';
+    }
+
+    function showKidsCards() {
+        document.getElementById('kidsCardGrid').style.display = 'grid';
+        document.getElementById('femaleCardGrid').style.display = 'none';
+        document.getElementById('maleCardGrid').style.display = 'none';
+    }
+
+    function searchProducts(category) {
+        console.log('searchProducts called with category:', category);
+        const url = `kioskBrowse.html?category=${encodeURIComponent(category)}`;
+        window.location.href = url;
+    }
+    function navigateToKioskCart() {
+        window.location.href = 'kioskCart.html';
+    }
+
+    window.showFemaleCards = showFemaleCards;
+    window.showMaleCards = showMaleCards;
+    window.showKidsCards = showKidsCards;
+    window.searchProducts = searchProducts;
+</script>
+
+</body>
+</html>

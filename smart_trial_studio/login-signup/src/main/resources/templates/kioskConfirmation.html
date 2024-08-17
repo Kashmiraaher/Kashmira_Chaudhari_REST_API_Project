@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #87efe0;
+            color: black;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #87efe0;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .footer {
+            background-color: #87efe0;
+            color: black;
+            padding: 10px 0;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Thank You for Your Order!</h1>
+</div>
+<div class="container">
+    <h2>Your order has been placed successfully.</h2>
+    <p>We appreciate your business.</p>
+    <a href="kiosk.html" class="button" onclick="clearKioskCart()">Continue Shopping</a>
+</div>
+<div class="footer">
+    <p>© 2024 Smart Trial Studio</p>
+</div>
+<script>
+    async function clearKioskCart() {
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/resetkioskcart', {
+                method: 'POST'
+            });
+            if (response.ok) {
+                alert('Cart has been reset for new order!');
+                updateCartCount(); // Update the cart count after clearing the cart
+            } else {
+                console.error('Failed to reset cart');
+                document.getElementById('cart-count').textContent = 'Error';
+            }
+        } catch (error) {
+            console.error('Error clearing kiosk cart:', error);
+            document.getElementById('cart-count').textContent = 'Error';
+        }
+    }
+
+    function updateCartCount() {
+        // Assuming the cart count is stored in a localStorage key called 'cartCount'
+        const cartCount = localStorage.getItem('cartCount') || 0;
+        document.getElementById('cart-count').textContent = cartCount;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        clearKioskCart(); // Automatically clear the cart on page load
+    });
+
+</script>
+
+</body>
+</html>

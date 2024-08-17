@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* General body styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('wall4.jpg') no-repeat center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        /* Container for the login form */
+        .container {
+            background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent background */
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 420px;
+        }
+          h2 {
+            color: #900C3F; /* Changed color */
+            font-size: 50px;
+        }
+
+
+        /* Input container for styling username and password fields */
+        .input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        /* Styling for labels */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 19px;
+            color:#900C3F;
+        }
+
+        /* Styling for input fields */
+        input[type="text"], input[type="password"] {
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 19px;
+            color: #900C3F;
+        }
+
+        /* Styling for icon */
+        .input-container i {
+            position: absolute;
+            top: 60%;
+            right: 2px;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        /* Styling for submit button */
+        button[type="submit"] {
+            padding: 12px;
+            background-color: #900C3F; /* Changed color */
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 19px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #900C3F; /* Maintained color */
+        }
+
+        /* Styling for message display */
+        #loginMessage {
+            margin-top: 20px;
+            color: teal;
+            font-size: 19px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+        <div class="input-container">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <i class='bx bxs-user'></i>
+        </div><br>
+
+        <div class="input-container">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <i class='bx bxs-lock-alt'></i>
+        </div><br>
+
+        <button type="submit">Login</button>
+    </form>
+    <p id="loginMessage"></p>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const formDataJson = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formDataJson)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('username', formDataJson.username); // Store username in local storage
+                window.location.href = 'browse.html';
+            } else {
+                document.getElementById('loginMessage').innerText = data.message || 'Login failed';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('loginMessage').innerText = 'An error occurred during login';
+        }
+    });
+</script>
+</body>
+</html>

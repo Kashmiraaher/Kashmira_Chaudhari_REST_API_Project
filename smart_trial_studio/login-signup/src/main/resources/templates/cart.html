@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .cart-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item img {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+        }
+        .cart-item-details {
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item-actions button {
+            padding: 5px 10px;
+            margin-left: 10px;
+            border: none;
+            background-color: #ff0000;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .cart-item-actions button:hover {
+            background-color: #cc0000;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #87efe0;
+            color: #fff;
+            padding: 10px 20px;
+            height: 50px;
+        }
+        nav h1 {
+            margin: 0;
+        }
+        .cart {
+            background-color: #000000;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .total-price {
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .checkout-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .checkout-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <h1>SMART TRIAL STUDIO</h1>
+    <p id="usernameDisplay">Welcome</p>
+    <div class="cart">No of Items: <span id="cart-count">0</span></div>
+</nav>
+
+<div class="cart-container">
+    <h1>Your Cart</h1>
+    <div id="cart-items"></div>
+    <div id="cart-empty" style="display: none;">
+        <p>Your cart is empty.</p>
+    </div>
+    <div id="total-price" class="total-price">Total Price: $0.00</div>
+    <a href="checkout.html" class="checkout-button">Proceed to Checkout</a>
+</div>
+<script>
+    const username = localStorage.getItem('username'); // Retrieve username from local storage
+    document.getElementById('usernameDisplay').textContent = username ? `Logged in as ${username}` : 'Welcome';
+
+    async function fetchProducts() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/auth/cart/${username}`);
+            if (response.ok) {
+                const products = await response.json();
+                console.log('Fetched products:', products);
+                displayCartItems(products);
+            } else {
+                console.error('Failed to fetch products:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    }
+
+    function displayCartItems(cartItems) {
+        const cartContainer = document.getElementById('cart-items');
+        const totalPriceElement = document.getElementById('total-price');
+        const checkoutButton = document.querySelector('.checkout-button');
+
+        cartContainer.innerHTML = '';
+        let totalPrice = 0;
+
+        if (cartItems.length === 0) {
+            document.getElementById('cart-empty').style.display = 'block';
+            checkoutButton.disabled = true;
+            console.log('Cart is empty, button disabled.'); // Debugging line
+        } else {
+            document.getElementById('cart-empty').style.display = 'none';
+            checkoutButton.disabled = false;
+            console.log('Cart has items, button enabled.'); // Debugging line
+
+            cartItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+
+                const itemImage = document.createElement('img');
+                itemImage.src = item.imgUrl;
+                itemElement.appendChild(itemImage);
+
+                const itemDetails = document.createElement('div');
+                itemDetails.className = 'cart-item-details';
+
+                itemDetails.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <p><strong>Price:</strong> $${item.price}</p>
+                `;
+                itemElement.appendChild(itemDetails);
+
+                const itemActions = document.createElement('div');
+                itemActions.className = 'cart-item-actions';
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => removeFromCart(item.id, username);
+                itemActions.appendChild(removeButton);
+
+                itemElement.appendChild(itemActions);
+
+                cartContainer.appendChild(itemElement);
+                totalPrice += item.price;
+            });
+
+            totalPriceElement.textContent = `Total Price: $${totalPrice.toFixed(2)}`;
+        }
+    } // Closing brace for displayCartItems function
+
+    async function removeFromCart(productId, username) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/auth/cart/remove/${productId}?username=${username}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            if (response.ok) {
+                alert('Product removed from cart');
+                location.reload();
+            } else {
+                console.error('Failed to remove product from cart:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('Error removing product from cart:', error);
+        }
+    } // Closing brace for removeFromCart function
+
+    async function updateCartCount(username) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/auth/cart/count/${username}`);
+            if (response.ok) {
+                const count = await response.json();
+                document.getElementById('cart-count').textContent = count;
+            } else {
+                console.error('Failed to fetch cart count:', response.status, response.statusText);
+                document.getElementById('cart-count').textContent = 'Error';
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+            document.getElementById('cart-count').textContent = 'Error';
+        }
+    } // Closing brace for updateCartCount function
+
+    window.onload = () => {
+        fetchProducts();
+        updateCartCount(username);
+    };
+</script> <!-- Make sure this tag is properly closed -->
+
+</body>
+</html>

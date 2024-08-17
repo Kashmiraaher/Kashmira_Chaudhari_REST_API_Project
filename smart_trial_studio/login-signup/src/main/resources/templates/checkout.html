@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+        }
+        .main {
+            background: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            width: 65%;
+        }
+        .payment-options {
+            background: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            width: 30%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .header, .footer {
+            background-color: #87efe0;
+            color: black;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            margin-top: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 95%; /* Set to 100% to take up full width in the payment form */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto;
+        }
+        .order-summary {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .order-summary h3 {
+            margin-top: 0;
+        }
+        .order-summary table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-summary table, .order-summary th, .order-summary td {
+            border: 1px solid #ccc;
+        }
+        .order-summary th, .order-summary td {
+            padding: 10px;
+            text-align: left;
+        }
+        .order-summary .total {
+            font-weight: bold;
+        }
+        .card-details {
+            display: block;; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Checkout</h1>
+    <p id="usernameDisplay">Welcome</p>
+</div>
+<div class="container">
+    <div class="main">
+        <h2>Billing Details</h2>
+        <form id="checkout-form">
+            <div class="form-group">
+                <label for="first-name">First Name *</label>
+                <input type="text" id="first-name" name="first-name" required>
+            </div>
+            <div class="form-group">
+                <label for="last-name">Last Name *</label>
+                <input type="text" id="last-name" name="last-name" required>
+            </div>
+            <div class="form-group">
+                <label for="company-name">Company Name (optional)</label>
+                <input type="text" id="company-name" name="company-name">
+            </div>
+            <div class="form-group">
+                <label for="country">Country/Region *</label>
+                <select id="country" name="country" required>
+                    <option value="">Select a country</option>
+                    <option value="us">United States</option>
+                    <option value="ca">Canada</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="address">Street Address *</label>
+                <input type="text" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+                <label for="city">Town/City *</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State/County (optional)</label>
+                <input type="text" id="state" name="state">
+            </div>
+            <div class="form-group">
+                <label for="postcode">Postcode/ZIP (optional)</label>
+                <input type="text" id="postcode" name="postcode">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <!-- Order Summary Section -->
+            <div class="order-summary">
+                <h3>Your Order</h3>
+                <table id="order-table">
+                    <tr>
+                        <th>Product</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-group">
+                <button type="submit">Place Order</button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Payment Options Section -->
+    <!-- Payment Options Section -->
+    <div class="payment-options">
+        <h2>Payment Options</h2>
+
+        <!-- Card Payment Form -->
+        <div class="card-details" id="card-details">
+            <div class="form-group">
+                <label for="card-name">Name on Card</label>
+                <input type="text" id="card-name" name="card-name" required>
+            </div>
+            <div class="form-group">
+                <label for="card-number">Card Number</label>
+                <input type="text" id="card-number" name="card-number" maxlength="16" required>
+            </div>
+            <div class="form-group">
+                <label for="card-expiration">Expiration</label>
+                <input type="text" id="card-expiration" name="card-expiration" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+                <label for="card-cvv">CVV</label>
+                <input type="text" id="card-cvv" name="card-cvv" maxlength="3" required>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="footer">
+    <p>© 2024 Smart Trial Studio</p>
+</div>
+
+<script>
+    const username = localStorage.getItem('username'); // Retrieve the username from local storage
+    document.getElementById('usernameDisplay').textContent = username ? `Logged in as ${username}` : 'Welcome';
+    let totalAmount = 0;
+
+    async function fetchCartItems() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/auth/cart/${username}`);
+            if (response.ok) {
+                const cartItems = await response.json();
+                displayOrderSummary(cartItems);
+                document.getElementById('checkout-form').dataset.products = JSON.stringify(cartItems);
+
+            } else {
+                console.error('Failed to fetch cart items:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching cart items:', error);
+        }
+    }
+
+    function displayOrderSummary(cartItems) {
+        const orderTable = document.getElementById('order-table');
+
+        cartItems.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name} x 1</td>
+                <td>$${item.price.toFixed(2)}</td>
+            `;
+            orderTable.appendChild(row);
+            totalAmount += item.price;
+        });
+
+        // Add shipping cost if applicable
+        const shippingCost = 10.00;
+        totalAmount += shippingCost;
+
+        const shippingRow = document.createElement('tr');
+        shippingRow.innerHTML = `
+            <td>Shipping</td>
+            <td>$${shippingCost.toFixed(2)}</td>
+        `;
+        orderTable.appendChild(shippingRow);
+
+        // Add total amount row
+        const totalRow = document.createElement('tr');
+        totalRow.className = 'total';
+        totalRow.innerHTML = `
+            <td>Total</td>
+            <td>$${totalAmount.toFixed(2)}</td>
+        `;
+        orderTable.appendChild(totalRow);
+    }
+
+    window.onload = function() {
+        fetchCartItems(); // Fetch cart items when the page loads
+
+<!--        // Payment method dropdown change event-->
+<!--        document.getElementById('payment-method').addEventListener('change', function() {-->
+<!--            const paymentMethod = this.value;-->
+<!--            const cardDetails = document.getElementById('card-details');-->
+<!--            const onlinePayment = document.getElementById('online-payment');-->
+
+<!--            if (paymentMethod === 'card') {-->
+<!--                cardDetails.style.display = 'block';-->
+<!--                onlinePayment.style.display = 'none';-->
+<!--            } else if (paymentMethod === 'online') {-->
+<!--                cardDetails.style.display = 'none';-->
+<!--                onlinePayment.style.display = 'block';-->
+<!--            } else {-->
+<!--                cardDetails.style.display = 'none';-->
+<!--                onlinePayment.style.display = 'none';-->
+<!--            }-->
+<!--        });-->
+    };
+
+    document.getElementById('checkout-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const form = document.getElementById('checkout-form');
+        const formData = new FormData(form);
+        const products = form.dataset.products ? JSON.parse(form.dataset.products) : []; // Check if products data is available
+        const orderDetails = {
+            firstName: formData.get('first-name'),
+            lastName: formData.get('last-name'),
+            companyName: formData.get('company-name'),
+            country: formData.get('country'),
+            address: formData.get('address'),
+            city: formData.get('city'),
+            state: formData.get('state'),
+            postcode: formData.get('postcode'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            products: products, // Use the products data
+            totalAmount: totalAmount
+        };
+
+        try {
+        console.log("Before http call");
+                const response = await fetch(`http://localhost:8080/api/auth/placeOrder/${username}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(orderDetails)
+            });
+
+            if (response.ok) {
+                alert('Order placed successfully!');
+                window.location.href = 'confirmation.html'; // Redirect to a confirmation page
+            } else {
+                console.error('Failed to place order:', response.status, response.statusText);
+                alert('Failed to place order. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Error placing order. Please try again.');
+        }
+    });
+</script>
+</body>
+</html>

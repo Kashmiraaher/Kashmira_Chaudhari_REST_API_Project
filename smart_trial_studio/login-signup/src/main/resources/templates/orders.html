@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <style>
+        /* Reset and base styles */
+        body {
+            font-family: "Brandon Text", Arial, sans-serif;
+<!--            background: url('browse4.jpg') no-repeat center fixed;-->
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        h1 {
+            color: #013220;
+            text-align: center;
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+            font-size: 50px;
+        }
+        /* Navbar styles */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #87efe0;
+            color: #fff;
+            padding: 10px 20px;
+            height: 50px;
+        }
+        .back {
+            background-color: #000000;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back:hover {
+            background-color: #808080;
+        }
+        .orders-table, .order-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .orders-table th, .orders-table td, .order-items-table th, .order-items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .orders-table th, .order-items-table th {
+            background-color: #87efe0;
+        }
+        .orders-table tr:nth-child(even), .order-items-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .order-items-container {
+            margin-top: 10px;
+        }
+        .order-id {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <h1>Order History</h1>
+    <div class="back" onclick="goBack()">Back</div>
+</nav>
+<div class="container">
+    <table class="orders-table" id="orders-table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total Amount</th>
+<!--            <th>Status</th>-->
+            <th>Items</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const username = localStorage.getItem('username');
+
+    async function fetchOrders() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/auth/orders/${username}`);
+            if (response.ok) {
+                const orders = await response.json();
+                console.log('Fetched orders:', orders);
+                renderOrders(orders);
+            } else {
+                console.error('Failed to fetch orders:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
+    }
+
+    function renderOrders(orders) {
+        const ordersTableBody = document.querySelector('#orders-table tbody');
+        ordersTableBody.innerHTML = '';
+
+        orders.forEach(order => {
+            const orderRow = document.createElement('tr');
+
+            orderRow.innerHTML = `
+                <td>${order.orderId}</td>
+                <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                <td>${order.totalAmount.toFixed(2)}</td>
+<!--                <td>${order.status}</td>-->
+                <td><button onclick="toggleOrderItems('${order.orderId}')">View Items</button></td>
+            `;
+
+            ordersTableBody.appendChild(orderRow);
+
+            // Create and append items table for this order
+            const orderItemsContainer = document.createElement('div');
+            orderItemsContainer.id = `order-items-${order.orderId}`;
+            orderItemsContainer.classList.add('order-items-container');
+            orderItemsContainer.style.display = 'none';
+
+            const orderItemsTable = document.createElement('table');
+            orderItemsTable.classList.add('order-items-table');
+            orderItemsTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+<!--                        <th>Quantity</th>-->
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${order.products.map(item => `
+                        <tr>
+                            <td>${item.name}</td>
+<!--                            <td>${item.quantity}</td>-->
+                            <td>${item.price.toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+
+            orderItemsContainer.appendChild(orderItemsTable);
+            document.body.appendChild(orderItemsContainer);
+        });
+    }
+
+    function toggleOrderItems(orderId) {
+        const itemsContainer = document.getElementById(`order-items-${orderId}`);
+        if (itemsContainer.style.display === 'none') {
+            itemsContainer.style.display = 'block';
+        } else {
+            itemsContainer.style.display = 'none';
+        }
+    }
+
+    function goBack() {
+        window.location.href = 'browse.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchOrders();
+    });
+</script>
+</body>
+</html>

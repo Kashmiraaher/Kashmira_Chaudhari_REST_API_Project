@@ -1,0 +1,71 @@
+/* styles.css */
+body {
+    font-family: 'Arial', sans-serif;
+    background: url('fashion.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent background */
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 320px;
+}
+
+h2 {
+    margin-bottom: 25px;
+    color: teal;
+    font-size: 24px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: teal;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 14px;
+    color: teal;
+}
+
+button {
+    padding: 12px;
+    background-color: teal;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #4db6ac;
+}
+
+#loginMessage, #signupMessage {
+    margin-top: 20px;
+    color: teal;
+    font-size: 14px;
+}
